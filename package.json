@@ -1,0 +1,26 @@
+{
+  "name": "trabalho_ine5612_nodejs",
+  "version": "1.0.0",
+  "description": "Trabalho 1 - Node.js\r Você deve criar um sistema de gerenciamento de matrículas de alunos em disciplinas do curso de Sistemas da Informação. As aulas ocorrem de segunda a sexta no período noturno, com 4 horários disponíveis a cada dia. Cada disciplina pode ter até 4 horários durante a semana. Os alunos podem se matricular em qualquer disciplina, desde que as disciplinas não tenham horários em conflito.",
+  "main": "mongo_express.js",
+  "dependencies": {
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "express-ejs-layouts": "^2.5.0",
+    "mongodb": "^3.3.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/T3nkai/trabalho_ine5612_nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/T3nkai/trabalho_ine5612_nodejs/issues"
+  },
+  "homepage": "https://github.com/T3nkai/trabalho_ine5612_nodejs#readme"
+}
