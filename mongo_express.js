@@ -84,7 +84,10 @@ app.post("/register-diciplina", function(req, res) {
 
     var codigo = req.body.codigo;
 
-    if (!nome || !codigo) {
+    var grade = req.body.grade;
+    
+
+    if (!nome || !codigo || grade.length == 0 || grade.length >= 5) {
 
         res.redirect("/register-diciplina");
 
@@ -98,7 +101,7 @@ app.post("/register-diciplina", function(req, res) {
 
         .collection("diciplina")
 
-        .insertOne({nome: nome, codigo: codigo});
+        .insertOne({nome: nome, codigo: codigo, grade: grade});
 
     res.redirect("/");
 
