@@ -1,21 +1,22 @@
 <%- contentFor('body') %>
+<br>
+<br>
+<br>
+<div style="display: flex; text-align: center">
+    <% if(contador > 0) { %>
+        <div style="width: 49%; ">
+            <a href="/cadastroAluno">Registrar novo aluno</a>
 
-<div class="jumbotron text-center">
+        </div>            
+    <% }; %>
 
-  Hello World
+    <div style="width: 49%">
+    
+        <a href="/cadastroDisciplina">Registrar nova disciplina</a>
+    </div>
 
-</div>
-
-<h1>Alunos</h1>
-
-<ul>
-
-    <% lista.forEach(function(aluno) { %>
-
-        <li><%= aluno.nome %> (<%= aluno.matricula %>)</li>
-
-    <% }); %>
-
-<ul>
-
-<a href="/register">Register new</a>
+</div><br>
+<br>
+<br><br>
+<br>
+<br>

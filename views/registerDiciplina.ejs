@@ -2,11 +2,17 @@
 
 <h1>Registro</h1>
 
-<form method="post" action="/register-diciplina">
 
-  Nome: <input type="text" name="nome" /><br/>
+<form method="post" action="/register-disciplina/<%=(disciplina.codigo ? disciplina.codigo : '')%>">
 
-  Codigo: <input type="text" name="codigo" /><br/>
+
+    <% if (disciplina.codigo) { %>
+    Codigo: <%= disciplina.codigo %><br />
+    <% } else { %>
+    Codigo: <input type="text" name="codigo" /><br />
+    <% } %>
+    Nome: <input type="text" name="nome" value="<%= disciplina.nome %>"/><br />
+    <br />
 
     <table border="1 black solid">
         <tbody>
@@ -20,43 +26,61 @@
             </tr>
             <tr>
                 <td>18:30</td>
-                <td><input type="checkbox" name="grade[0]" value="00"></td>
-                <td><input type="checkbox" name="grade[1]" value="01"></td>
-                <td><input type="checkbox" name="grade[2]" value="02"></td>
-                <td><input type="checkbox" name="grade[3]" value="03"></td>
-                <td><input type="checkbox" name="grade[4]" value="04"></td>
+                <td><input type="checkbox" name="horarios[0]" value="0"
+                        <%= disciplina.horarios.includes("0") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[1]" value="1"
+                        <%= disciplina.horarios.includes("1") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[2]" value="2"
+                        <%= disciplina.horarios.includes("2") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[3]" value="3"
+                        <%= disciplina.horarios.includes("3") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[4]" value="4"
+                        <%= disciplina.horarios.includes("4") ? "checked": "" %>></td>
             </tr>
             <tr>
                 <td>19:20</td>
-                <td><input type="checkbox" name="grade[5]" value="10"></td>
-                <td><input type="checkbox" name="grade[6]" value="11"></td>
-                <td><input type="checkbox" name="grade[7]" value="12"></td>
-                <td><input type="checkbox" name="grade[8]" value="13"></td>
-                <td><input type="checkbox" name="grade[9]" value="14"></td>
+                <td><input type="checkbox" name="horarios[5]" value="5"
+                        <%= disciplina.horarios.includes("5") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[6]" value="6"
+                        <%= disciplina.horarios.includes("6") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[7]" value="7"
+                        <%= disciplina.horarios.includes("7") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[8]" value="8"
+                        <%= disciplina.horarios.includes("8") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[9]" value="9"
+                        <%= disciplina.horarios.includes("9") ? "checked": "" %>></td>
             </tr>
             <tr>
                 <td>20:20</td>
-                <td><input type="checkbox" name="grade[10]" value="20"></td>
-                <td><input type="checkbox" name="grade[11]" value="21"></td>
-                <td><input type="checkbox" name="grade[12]" value="22"></td>
-                <td><input type="checkbox" name="grade[13]" value="23"></td>
-                <td><input type="checkbox" name="grade[14]" value="24"></td>
+                <td><input type="checkbox" name="horarios[10]" value="10"
+                        <%= disciplina.horarios.includes("10") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[11]" value="11"
+                        <%= disciplina.horarios.includes("11") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[12]" value="12"
+                        <%= disciplina.horarios.includes("12") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[13]" value="13"
+                        <%= disciplina.horarios.includes("13") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[14]" value="14"
+                        <%= disciplina.horarios.includes("14") ? "checked": "" %>></td>
             </tr>
             <tr>
                 <td>21:10</td>
-                <td><input type="checkbox" name="grade[14]" value="30"></td>
-                <td><input type="checkbox" name="grade[16]" value="31"></td>
-                <td><input type="checkbox" name="grade[17]" value="32"></td>
-                <td><input type="checkbox" name="grade[18]" value="33"></td>
-                <td><input type="checkbox" name="grade[19]" value="30"></td>
+                <td><input type="checkbox" name="horarios[14]" value="15"
+                        <%= disciplina.horarios.includes("15") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[16]" value="16"
+                        <%= disciplina.horarios.includes("16") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[17]" value="17"
+                        <%= disciplina.horarios.includes("17") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[18]" value="18"
+                        <%= disciplina.horarios.includes("18") ? "checked": "" %>></td>
+                <td><input type="checkbox" name="horarios[19]" value="19"
+                        <%= disciplina.horarios.includes("19") ? "checked": "" %>></td>
             </tr>
         </tbody>
     </table>
 
+    <br />
 
-
-
-
-  <input type="submit" value="Enviar" />
-
+    <input type="submit" value="Enviar" />
+    <br />
 </form>

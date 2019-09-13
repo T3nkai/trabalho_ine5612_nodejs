@@ -1,0 +1,14 @@
+<%- contentFor('body') %>
+
+
+<div style="width: 49%">
+    <h1>Disciplina</h1>
+    <ul>
+        <% lista.forEach(function(disciplina) { %>
+        <li><%= disciplina.nome %> (<a href="/register-disciplina/<%=disciplina.codigo%>"><%= disciplina.codigo %></a>)</li>
+        <% }); %>
+        <ul>
+            <a href="/register-disciplina">Registrar nova disciplina</a><br/><br/>
+            <a href="/"> voltar</a>
+
+</div>

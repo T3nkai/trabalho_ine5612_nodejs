@@ -4,6 +4,7 @@
   "description": "Trabalho 1 - Node.js\r Você deve criar um sistema de gerenciamento de matrículas de alunos em disciplinas do curso de Sistemas da Informação. As aulas ocorrem de segunda a sexta no período noturno, com 4 horários disponíveis a cada dia. Cada disciplina pode ter até 4 horários durante a semana. Os alunos podem se matricular em qualquer disciplina, desde que as disciplinas não tenham horários em conflito.",
   "main": "mongo_express.js",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "ejs": "^2.7.1",
     "express": "^4.17.1",
     "express-ejs-layouts": "^2.5.0",
@@ -14,7 +15,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon mongo_express.js" 
+    "start": "nodemon mongo_express.js"
   },
   "repository": {
     "type": "git",

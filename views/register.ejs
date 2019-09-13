@@ -1,13 +1,11 @@
 <%- contentFor('body') %>
-
 <h1>Registro</h1>
-
-<form method="post" action="/register">
-
-  Nome: <input type="text" name="nome" /><br/>
-
-  Matrícula: <input type="text" name="matricula" /><br/>
-
+<form method="post" action="/register/<%=(aluno.matricula ? aluno.matricula : '')%>">
+    <% if (aluno.matricula) { %>
+    Matrícula: <%= aluno.matricula %><br />
+    <% } else { %>
+    Matrícula: <input type="text" name="matricula" /><br/>
+    <% } %>
+    Nome: <input type="text" name="nome" value="<%=aluno.nome %>" /><br/>
   <input type="submit" value="Enviar" />
-
 </form>

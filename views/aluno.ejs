@@ -1,0 +1,16 @@
+<%- contentFor('body') %>
+<div>
+
+
+    <div style="width: 49%">
+        <h1>Alunos</h1>
+        <ul>
+            <% lista.forEach(function(aluno) { %>
+            <li><%= aluno.nome %> (<a href="/register/<%=aluno.matricula%>"><%= aluno.matricula %></a>)</li>
+            <% }); %>
+            <ul>
+                <a href="/register">Registrar novo aluno</a><br/><br/>
+                <a href="/"> voltar</a>
+
+    </div>
+</div>
