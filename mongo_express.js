@@ -1,156 +1,81 @@
 const MongoClient = require('mongodb').MongoClient;
-
 const uri = "mongodb+srv://root:root@cluster-ftk2b.mongodb.net/test?retryWrites=true&w=majority";
-
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
+const mongoose = require('mongoose');
+mongoose.connect(uri, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
+const db = mongoose.connection;
 const express = require('express');
-
 const expressLayouts = require('express-ejs-layouts');
-
 const bodyParser = require('body-parser');
+const app = express();
 
-var app = express();
 
 app.set('view engine', 'ejs');
-
 app.use(expressLayouts);
-
 app.use(express.urlencoded());
 
-// app.use(express.urlencoded({extended: true})); 
-// app.use(express.json());   
 
-// const Schema = MongoClient.Schema;
+const Disciplina = require('./models/Diciplina')
+const Aluno = require('./models/Aluno')
 
-// const alunoSchema = Schema({
-//   _id: Schema.Types.ObjectId,
-//   nome: String,
-//   matricula: Number,
-//   disciplina: [{ type: Schema.Types.ObjectId, ref: 'diciplina' }]
-// });
 
-// const diciplinaSchema = Schema({
-//     _id: Schema.Types.ObjectId,
-//     nome: String,
-//     matricula: Number,
-//     horarios: Array,
-// });
 
-// const Diciplina = mongoose.model('diciplina', alunoSchema);
-// const Aluno = mongoose.model('Person', alunoSchema);
+app.get("/", async function (req, res) {
 
-const port = 8080;
-const dbName = "ine5612";
+    let disciplina = await Disciplina.find();
+    res.render("home", { title: "Home", contador: disciplina.length });
 
-app.get("/", function (req, res) {
-    client
-        .db(dbName)
-        .collection("disciplina")
-        .find({})
-        .toArray(function (err, disciplina) {
-            res.render("home", { title: "Home", contador: disciplina.length });
-        });
 });
 
 
 
-app.get("/cadastroAluno", function (req, res) {
+app.get("/cadastroAluno", async function (req, res) {
 
-    var testeDiciplina = {};
-    client
-        .db(dbName)
-        .collection("alunos")
-        .find({})
-        .toArray()
-        .then(function (alunos) {
-            TesteAluno = alunos;
-            res.render("aluno", { title: "aluno", lista: TesteAluno });
+    let alunos = await Aluno.find();
+    res.render("aluno", { title: "aluno", lista: alunos });
 
-        });
-
-         
-
-        
 });
 
 
-app.get("/cadastroDisciplina", function (req, res) {
-    client
-        .db(dbName)
-        .collection("disciplina")
-        .find({})
-        .toArray(function (err, disciplina) {
-            res.render("diciplina", { title: "Disciplina", lista: disciplina });
-        });
+app.get("/cadastroDisciplina", async function (req, res) {
+
+    let disciplina = await Disciplina.find();
+    res.render("diciplina", { title: "Disciplina", lista: disciplina });
 });
 
 
 
 
-
-app.get("/register", function (req, res) {
+app.get("/register", async function (req, res) {
     //Este handler serve para registar um novo aluno.
     //Desta forma, passamos um objeto aluno vazio para
     //a view.
-
-
-
-    //TESTE PARA CARREGAR DOIS OBJETO DO BANCO AQUI 
-    // var TesteAluno = {};
-    // var testeDiciplina = {};
-    // client
-    //     .db(dbName)
-    //     .collection("alunos")
-    //     .find({})
-    //     .toArray()
-    //     .then(function (alunos) {
-    //         TesteAluno = alunos;
-    //       client
-    //     .db(dbName)
-    //     .collection("disciplina")
-    //     .find({})
-    //     .toArray()
-    //     .then(function ( disciplina) {
-    //        testeDiciplina = disciplina;
-    //        console.log(TesteAluno)
-    //        console.log(testeDiciplina)
-
-        
-    //         res.render("aluno", { title: "aluno", lista: TesteAluno });
-
-    //     });
-        
-    //     });
-
-    res.render("register", {
-        title: "Novo aluno",
-        aluno: {}
-    });
+    let disciplina = await Disciplina.find();
+    res.render("register",
+        {
+            title: "Novo aluno",
+            aluno: {},
+            disciplina: disciplina
+        });
 });
 
-app.get("/register/:matricula", function (req, res) {
+app.get("/register/:matricula", async function (req, res) {
     //Este handler serve para alterar um aluno, e recebe
     //a matrícula como parâmetro. É feita uma consulta no banco
     //e, caso não encontre aluno com essa matrícula, retorna
     //erro 404. Senão, retorna a view passando o aluno 
     //encontrado
-    client
-        .db(dbName)
-        .collection("alunos")
-        .findOne({ matricula: req.params.matricula })
-        .then(function (aluno) {
-            if (!aluno)
-                res.sendStatus(404);
-            else
-                res.render("register", {
-                    title: "Alterar aluno",
-                    aluno: aluno
-                });
-        });
+    let aluno = await Aluno.findOne({ matricula: req.params.matricula })
+    let disciplina = await Disciplina.find();
+    res.render("register", {
+        title: "Alterar aluno",
+        aluno: aluno,
+        disciplina: disciplina
+    });
 });
 
-app.post("/register/:matricula?", function (req, res) {
+app.post("/register/:matricula?", async function (req, res) {
     //Este handler recebe um POST tanto de registro de novo
     //aluno como de alteração de um aluno existente. O ponto
     //de interrogação no parâmetro 'matricula' indica que esse
@@ -162,54 +87,64 @@ app.post("/register/:matricula?", function (req, res) {
     //em req.body, apenas em req.params (veja a view, lá não é definido
     //um campo de matrícula quando é alteração de aluno).
     if (!req.params.matricula) {
-        var matricula = req.body.matricula;
-        var nome = req.body.nome
+        let aluno = new Aluno();
+        aluno.nome = req.body.nome;
+        aluno.matricula = req.body.matricula;
 
-        if (!nome || !matricula) {
+        let disciplinas = await Disciplina.find({ codigo: req.body.checkDisciplina });
+
+        disciplinas.forEach(disciplina => {
+            aluno.disciplinas.push(disciplina)
+        });
+
+        if (!req.body.nome || !req.body.matricula || req.body.checkDisciplina.length == 0) {
             res.sendStatus(400);
             return;
         }
 
-        client
-            .db(dbName)
-            .collection("alunos")
-            .insertOne({ nome: nome, matricula: matricula });
+        await aluno.save();
         res.redirect("/");
     }
     else {
-        var nome = req.body.nome;
-        var matricula = req.params.matricula;
-        if (!nome) {
+        // var aluno = await Aluno.findOne({ matricula: req.params.matricula }).populate('disciplinas')
+        if (!req.body.nome || req.body.checkDisciplina.length == 0) {
             //Se não recebemos um nome, retorna erro 400
-            res.sendStatus(400);
+            res.status({ error: 'Variavel nao condigente com as regras' }).send(400);
             console.log("Nome não informado...")
             return;
         }
+        var disciplinas = await Disciplina.find({ codigo: req.body.checkDisciplina })
+
+        var aluno = await Aluno.findOneAndUpdate({matricula:req.params.matricula},
+            {
+                nome: req.body.nome,
+                disciplinas:disciplinas
+
+            }, {new: true})
+
+        // aluno.disciplinas.forEach(disciplina => {
+        //     disciplina.horarios.forEach(horario => {
+        //         for (let index = 0; index < disciplinas.length; index++) {
+        //             if (disciplinas[index].horarios.includes(horario)) {
+        //                 res.status({ error: 'ocorreu conflito de materia' }).send(400);
+        //             }
+        //         }
+        //     });
+        // });
 
         //Realiza o UPDATE no banco.
         console.log("update...")
-        client
-            .db(dbName)
-            .collection("alunos")
-            .updateOne(
-                {
-                    matricula: matricula
-                },
-                {
-                    $set: { nome: nome }
-                },
-                function (err, result) {
-                    if (err) {
-                        console.log(err);
-                        throw err;
-                    }
-                    res.redirect("/");
-                    return;
-                });
+        res.redirect("/");
     }
 });
 
-app.get("/register-disciplina", function (req, res) {
+
+
+
+
+
+
+app.get("/register-disciplina", async function (req, res) {
     //Este handler serve para registar um novo aluno.
     //Desta forma, passamos um objeto aluno vazio para
     //a view.
@@ -224,30 +159,28 @@ app.get("/register-disciplina", function (req, res) {
 });
 
 
-app.get("/register-disciplina/:codigo", function (req, res) {
+app.get("/register-disciplina/:codigo", async function (req, res) {
     //Este handler serve para alterar um aluno, e recebe
     //a matrícula como parâmetro. É feita uma consulta no banco
     //e, caso não encontre aluno com essa matrícula, retorna
     //erro 404. Senão, retorna a view passando o aluno 
     //encontrado
-    client
-        .db(dbName)
-        .collection("disciplina")
-        .findOne({ matricula: req.params.matricula })
-        .then(function (disciplina) {
-            if (!disciplina)
-                res.sendStatus(404);
-            else
-                res.render("registerDiciplina", {
-                    title: "Alterar disciplina",
-                    disciplina: disciplina
-                });
+
+
+    let disciplina = await Disciplina.findOne({ 'codigo': req.params.codigo });
+    if (!disciplina) {
+        res.sendStatus(404);
+    } else {
+        res.render("registerDiciplina", {
+            title: "Alterar disciplina",
+            disciplina: disciplina
         });
+    }
 });
 
 
-
-app.post("/register-disciplina/:codigo?", function (req, res) {
+//ok
+app.post("/register-disciplina/:codigo?", async function (req, res) {
     //Este handler recebe um POST tanto de registro de novo
     //aluno como de alteração de um aluno existente. O ponto
     //de interrogação no parâmetro 'matricula' indica que esse
@@ -258,35 +191,23 @@ app.post("/register-disciplina/:codigo?", function (req, res) {
     //notar que, neste caso, não é recebido o número da matrícula
     //em req.body, apenas em req.params (veja a view, lá não é definido
     //um campo de matrícula quando é alteração de aluno).
-    var disciplina = {
-        nome: undefined,
-        codigo: undefined,
-        horarios: []
-
-    }
 
     if (!req.params.codigo) {
-        disciplina.codigo = req.body.codigo;
-        disciplina.nome = req.body.nome
-        disciplina.horarios = req.body.horarios
+        body = req.body
+        let disciplina = new Disciplina({ ...body });
 
         if (!disciplina.nome || !disciplina.codigo || disciplina.horarios.length == 0 || disciplina.horarios.length >= 5) {
             res.body = disciplina;
             res.sendStatus(400);
             return;
         }
-
-        client
-            .db(dbName)
-            .collection("disciplina")
-            .insertOne({ nome: disciplina.nome, codigo: disciplina.codigo, horarios: disciplina.horarios });
+        disciplina.save()
         res.redirect("/");
     }
     else {
-        disciplina.nome = req.body.nome
-        disciplina.horarios = req.body.horarios
-        disciplina.codigo = req.params.codigo;
-        if (!disciplina.nome || disciplina.horarios.length == 0 || disciplina.horarios.length >= 5) {
+
+        let disciplinaUp = req.body
+        if (!disciplinaUp.nome || disciplinaUp.horarios.length == 0 || disciplinaUp.horarios.length >= 5) {
             //Se não recebemos um nome, retorna erro 400
             res.sendStatus(400);
             console.log(" não informado...")
@@ -294,38 +215,18 @@ app.post("/register-disciplina/:codigo?", function (req, res) {
         }
 
         //Realiza o UPDATE no banco.
-        console.log("update...")
-        client
-            .db(dbName)
-            .collection("disciplina")
-            .updateOne(
-                {
-                    codigo: disciplina.codigo
-                },
-                {
-                    $set: {
-                        nome: disciplina.nome,
-                        horarios: disciplina.horarios
-                    }
-                },
-                function (err, result) {
-                    if (err) {
-                        console.log(err);
-                        throw err;
-                    }
-                    res.redirect("/");
-                    return;
-                });
+        await Disciplina.findOneAndUpdate({ codigo: req.params.codigo },
+            {
+                nome: disciplinaUp.nome,
+                horarios: disciplinaUp.horarios
+            });
+        res.redirect("/");
     }
 });
 
-
-
-
-
 client.connect(function (err, db) {
 
-    app.listen(port, function () {
+    app.listen(8080, function () {
 
         console.log("Server running! Press CTRL+C to close");
 

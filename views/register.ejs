@@ -1,11 +1,91 @@
 <%- contentFor('body') %>
 <h1>Registro</h1>
 <form method="post" action="/register/<%=(aluno.matricula ? aluno.matricula : '')%>">
-    <% if (aluno.matricula) { %>
-    Matrícula: <%= aluno.matricula %><br />
-    <% } else { %>
-    Matrícula: <input type="text" name="matricula" /><br/>
-    <% } %>
-    Nome: <input type="text" name="nome" value="<%=aluno.nome %>" /><br/>
+  <% if (aluno.matricula) { %>
+  Matrícula: <%= aluno.matricula %><br />
+  <% } else { %>
+  Matrícula: <input type="text" name="matricula" /><br />
+  <% } %>
+  Nome: <input type="text" name="nome" value="<%=aluno.nome %>" /><br />
+
+
+  <br />
+  <br />
+  <% for(var i=0; i<disciplina.length; i++) {%>
+  
+      <input type="checkbox" name="checkDisciplina" value="<%=disciplina[i].codigo%>">
+    Codigo: <%= disciplina[i].codigo %><br />
+  Nome: <%= disciplina[i].nome %> <br />
+  <table border="1 black solid">
+    <tbody>
+      <tr>
+        <td></td>
+        <td>Segunda</td>
+        <td>Terça</td>
+        <td>Quarta</td>
+        <td>Quinta</td>
+        <td>Sexta</td>
+      </tr>
+      <tr>
+        <td>18:30</td>
+        <td>
+          <%= disciplina[i].horarios.includes("0") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("1") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("2") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("3") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("4") ? "X": "" %></td>
+      </tr>
+      <tr>
+        <td>19:20</td>
+        <td>
+          <%= disciplina[i].horarios.includes("5") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("6") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("7") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("8") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("9") ? "X": "" %></td>
+      </tr>
+      <tr>
+        <td>20:20</td>
+        <td>
+          <%= disciplina[i].horarios.includes("10") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("11") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("12") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("13") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("14") ? "X": "" %></td>
+      </tr>
+      <tr>
+        <td>21:10</td>
+        <td>
+          <%= disciplina[i].horarios.includes("15") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("16") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("17") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("18") ? "X": "" %></td>
+        <td>
+          <%= disciplina[i].horarios.includes("19") ? "X": "" %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br />
+  <% } %>
+
+
+
+
   <input type="submit" value="Enviar" />
 </form>
