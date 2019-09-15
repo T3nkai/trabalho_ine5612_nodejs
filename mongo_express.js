@@ -19,6 +19,38 @@ app.use(express.urlencoded());
 const Disciplina = require('./models/Diciplina')
 const Aluno = require('./models/Aluno')
 
+const listFunction = {
+    diableChecBox:async function(disciplina, aluno){
+        if(aluno.isNew()){
+            return false
+        }else{
+            if(new Date(aluno.updatedAt) > new Date(disciplina.updatedAt)){
+                    return  true
+            }
+        }
+    },
+
+    hasConlit: async function(disciplinas){
+
+        if(disciplinas.length == 1){
+                return false;
+        };
+        var auxDisc = {}
+        auxDisc.concat({},disciplinas);
+        for (let index = 0; index < disciplinas.length; index++) {
+            const disciplina = disciplinas[index];
+            for (let indexsub = index+1; indexsub < auxDisc.length; indexsub++) {
+                const disc = auxDisc[index];
+                disciplina.horarios.forEach(horario => {
+                    if(disc.horarios.includes(horario)){
+                        return true;
+                    }
+                });
+            }            
+        }
+    }
+}
+
 
 
 app.get("/", async function (req, res) {
@@ -52,11 +84,13 @@ app.get("/register", async function (req, res) {
     //Desta forma, passamos um objeto aluno vazio para
     //a view.
     let disciplina = await Disciplina.find();
+    let aluno = new Aluno();
     res.render("register",
         {
             title: "Novo aluno",
-            aluno: {},
-            disciplina: disciplina
+            aluno: aluno,
+            disciplina: disciplina,
+            functions:  listFunction
         });
 });
 
@@ -71,7 +105,8 @@ app.get("/register/:matricula", async function (req, res) {
     res.render("register", {
         title: "Alterar aluno",
         aluno: aluno,
-        disciplina: disciplina
+        disciplina: disciplina,
+        functions:  listFunction
     });
 });
 
@@ -87,22 +122,16 @@ app.post("/register/:matricula?", async function (req, res) {
     //em req.body, apenas em req.params (veja a view, lá não é definido
     //um campo de matrícula quando é alteração de aluno).
     if (!req.params.matricula) {
-        let aluno = new Aluno();
-        aluno.nome = req.body.nome;
-        aluno.matricula = req.body.matricula;
-
-        let disciplinas = await Disciplina.find({ codigo: req.body.checkDisciplina });
-
-        disciplinas.forEach(disciplina => {
-            aluno.disciplinas.push(disciplina)
-        });
+      
 
         if (!req.body.nome || !req.body.matricula || req.body.checkDisciplina.length == 0) {
             res.sendStatus(400);
-            return;
+            return
         }
+        let disciplinas = await Disciplina.find({ codigo: req.body.checkDisciplina });
+        let aluno = await Aluno.create({nome: req.body.nome, matricula: req.body.matricula, disciplinas:disciplinas});
 
-        await aluno.save();
+
         res.redirect("/");
     }
     else {
