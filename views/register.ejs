@@ -13,7 +13,16 @@
   <br />
   <% for(var i=0; i<disciplina.length; i++) {%>
   
-      <div ><input type="checkbox" name="checkDisciplina" value="<%=disciplina[i].codigo%>"></div>
+      <div  
+
+      >
+      <input type="checkbox" name="checkDisciplina" value="<%=disciplina[i].codigo%>" 
+      <%=( (aluno, disciplina, i ) =>{
+        for(let index = 0; index < aluno.disciplinas.length; index++ ){
+          return aluno.disciplinas[i].codido === disciplina[i].codigo
+        }  
+      } )? "checked": "" %>
+      ></div>
     Codigo: <%= disciplina[i].codigo %><br />
   Nome: <%= disciplina[i].nome %> <br />
   <table border="1 black solid">

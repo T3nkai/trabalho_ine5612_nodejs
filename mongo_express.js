@@ -20,34 +20,45 @@ const Disciplina = require('./models/Diciplina')
 const Aluno = require('./models/Aluno')
 
 const listFunction = {
-    diableChecBox:async function(disciplina, aluno){
-        if(aluno.isNew()){
+    diableChecBox: async function (disciplina, aluno) {
+        if (aluno.isNew()) {
             return false
-        }else{
-            if(new Date(aluno.updatedAt) > new Date(disciplina.updatedAt)){
-                    return  true
+        } else {
+            if (aluno.updatedAt > disciplina.updatedAt) {
+                return true
             }
         }
     },
 
-    hasConlit: async function(disciplinas){
+    hasConlit: function (disciplinas) {
 
-        if(disciplinas.length == 1){
-                return false;
+        if (disciplinas.length == 1) {
+            return false;
         };
-        var auxDisc = {}
-        auxDisc.concat({},disciplinas);
+        var retorno = false;
+        var auxDisc = disciplinas;
         for (let index = 0; index < disciplinas.length; index++) {
             const disciplina = disciplinas[index];
-            for (let indexsub = index+1; indexsub < auxDisc.length; indexsub++) {
+            for (let indexsub = index + 1; indexsub < auxDisc.length; indexsub++) {
                 const disc = auxDisc[index];
                 disciplina.horarios.forEach(horario => {
-                    if(disc.horarios.includes(horario)){
-                        return true;
+                    if (disc.horarios.includes(horario)) {
+                        retorno = true;
+                        return retorno;
+                    }
+                    if (retorno) {
+                        break;
                     }
                 });
-            }            
+                if (retorno) {
+                    break;
+                }
+            }
+            if (retorno) {
+                break;
+            }
         }
+        return retorno
     }
 }
 
@@ -85,12 +96,14 @@ app.get("/register", async function (req, res) {
     //a view.
     let disciplina = await Disciplina.find();
     let aluno = new Aluno();
+    let isnew = aluno.isNew
     res.render("register",
         {
             title: "Novo aluno",
             aluno: aluno,
+            isNew: isnew,
             disciplina: disciplina,
-            functions:  listFunction
+            functions: listFunction
         });
 });
 
@@ -101,12 +114,18 @@ app.get("/register/:matricula", async function (req, res) {
     //erro 404. Senão, retorna a view passando o aluno 
     //encontrado
     let aluno = await Aluno.findOne({ matricula: req.params.matricula })
-    let disciplina = await Disciplina.find();
+    let disciplinas = await Disciplina.find();
+
+    disciplinas.forEach(disciplina => {
+        disciplina.atualizadoEm = disciplina.updatedAt.getTime();
+    });
+    aluno.atualizadoEm = aluno.updatedAt.getTime();
+
     res.render("register", {
         title: "Alterar aluno",
         aluno: aluno,
-        disciplina: disciplina,
-        functions:  listFunction
+        disciplina: disciplinas,
+        functions: listFunction
     });
 });
 
@@ -122,15 +141,37 @@ app.post("/register/:matricula?", async function (req, res) {
     //em req.body, apenas em req.params (veja a view, lá não é definido
     //um campo de matrícula quando é alteração de aluno).
     if (!req.params.matricula) {
-      
+
 
         if (!req.body.nome || !req.body.matricula || req.body.checkDisciplina.length == 0) {
             res.sendStatus(400);
             return
         }
         let disciplinas = await Disciplina.find({ codigo: req.body.checkDisciplina });
-        let aluno = await Aluno.create({nome: req.body.nome, matricula: req.body.matricula, disciplinas:disciplinas});
 
+        if (disciplinas.length > 1) {
+
+            var auxDisc = disciplinas;
+            for (let index = 0; index < disciplinas.length; index++) {
+                const disciplina = disciplinas[index];
+                for (let indexsub = index + 1; indexsub < auxDisc.length; indexsub++) {
+                    const disc = auxDisc[indexsub];
+                    disciplina.horarios.forEach(horario => {
+                        if (disc.horarios.includes(horario)) {
+                            res.sendStatus(400);
+                            res.status({ error: 'Variavel nao condigente com as regras' }).send(400);
+                            return;
+                        }
+
+                    });
+
+                }
+
+            }
+        }
+
+
+        await Aluno.create({ nome: req.body.nome, matricula: req.body.matricula, disciplinas: disciplinas });
 
         res.redirect("/");
     }
@@ -143,23 +184,32 @@ app.post("/register/:matricula?", async function (req, res) {
             return;
         }
         var disciplinas = await Disciplina.find({ codigo: req.body.checkDisciplina })
+        if (disciplinas.length > 1) {
 
-        var aluno = await Aluno.findOneAndUpdate({matricula:req.params.matricula},
+            var auxDisc = disciplinas;
+            for (let index = 0; index < disciplinas.length; index++) {
+                const disciplina = disciplinas[index];
+                for (let indexsub = index + 1; indexsub < auxDisc.length; indexsub++) {
+                    const disc = auxDisc[index];
+                    disciplina.horarios.forEach(horario => {
+                        if (disc.horarios.includes(horario)) {
+                            res.sendStatus(400);
+                            res.status({ error: 'Variavel nao condigente com as regras' }).send(400);
+                            return;
+                        }
+                    });
+
+                }
+
+            }
+        }
+
+        var aluno = await Aluno.findOneAndUpdate({ matricula: req.params.matricula },
             {
                 nome: req.body.nome,
-                disciplinas:disciplinas
+                disciplinas: disciplinas
 
-            }, {new: true})
-
-        // aluno.disciplinas.forEach(disciplina => {
-        //     disciplina.horarios.forEach(horario => {
-        //         for (let index = 0; index < disciplinas.length; index++) {
-        //             if (disciplinas[index].horarios.includes(horario)) {
-        //                 res.status({ error: 'ocorreu conflito de materia' }).send(400);
-        //             }
-        //         }
-        //     });
-        // });
+            }, { new: true })
 
         //Realiza o UPDATE no banco.
         console.log("update...")
