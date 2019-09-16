@@ -145,8 +145,15 @@ app.post("/register/:matricula?", async function (req, res) {
     //um campo de matrícula quando é alteração de aluno).
     if (!req.params.matricula) {
 
+        if (!Array.isArray(req.body.checkDisciplina)) {
+            if (req.body.checkDisciplina) {
+                var checkDisciplina = [req.body.checkDisciplina]
+            }else{
+                var checkDisciplina = []
+            }
+        }
 
-        if (!req.body.nome || !req.body.matricula || req.body.checkDisciplina.length == 0) {
+        if (!req.body.nome || !req.body.matricula || checkDisciplina.length == 0) {
             res.sendStatus(400);
             return
         }
@@ -180,7 +187,14 @@ app.post("/register/:matricula?", async function (req, res) {
     }
     else {
         // var aluno = await Aluno.findOne({ matricula: req.params.matricula }).populate('disciplinas')
-        if (!req.body.nome || req.body.checkDisciplina.length == 0) {
+        if (!Array.isArray(req.body.checkDisciplina)) {
+            if (req.body.checkDisciplina) {
+                var checkDisciplina = [req.body.checkDisciplina]
+            }else{
+                var checkDisciplina = []
+            }
+        }
+        if (!req.body.nome || checkDisciplina.length == 0) {
             //Se não recebemos um nome, retorna erro 400
             res.status({ error: 'Variavel nao condigente com as regras' }).send(400);
             console.log("Nome não informado...")
