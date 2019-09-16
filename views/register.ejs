@@ -11,24 +11,25 @@
   <br />
   <br />
   <%  for(var i=0; i < disciplinas.length; i++) { %>
-  <%  var disciplina = disciplinas[i] %>
+  <%  var disciplina = disciplinas[i] 
 
-  <div>
-   
-    <input type="checkbox" name="checkDisciplina" value="<%=disciplina.codigo%>" <%=  ((alunoDisc, disciplina) =>{
-        if(alunoDisc.length > 0){
-          for(let index = 0; index < alunoDisc.length; index++ ){
-            return alunoDisc[index].codigo == disciplina.codigo
-          }  
-        }else{
-          return false
-         }
-      })? 'checked' :''  %> >
-    </div>
+    let disciplinaSelecionada = false %>
+  
+    <% for(var j=0; j < aluno.disciplinas.length; j++) {%>
+        <% if (aluno.disciplinas[j].codigo == disciplina.codigo) {
+            disciplinaSelecionada = true;
+          }%>
+      <% } %>
+  <% if(disciplinaSelecionada) { %>
+    <% if(aluno.updatedAt > disciplina.updatedAt) { %>
+    <input type="checkbox" name="checkDisciplina" value="<%=disciplina.codigo%>" checked >
+  <% } 
+    }else{ %>
+    <input type="checkbox" name="checkDisciplina" value="<%=disciplina.codigo%>" >
+  <% } %>
 
 
-
-  Codigo: <%= disciplina.codigo%><br />
+  Codigo: <%= disciplina.codigo %><br />
   Nome: <%= disciplina.nome %> <br />
   <table border="1 black solid">
     <tbody>
