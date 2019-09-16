@@ -102,7 +102,8 @@ app.get("/register", async function (req, res) {
             title: "Novo aluno",
             aluno: aluno,
             isNew: isnew,
-            disciplina: disciplina,
+            alunoDisc: aluno.disciplinas,
+            disciplinas: disciplina,
             functions: listFunction
         });
 });
@@ -113,18 +114,20 @@ app.get("/register/:matricula", async function (req, res) {
     //e, caso não encontre aluno com essa matrícula, retorna
     //erro 404. Senão, retorna a view passando o aluno 
     //encontrado
-    let aluno = await Aluno.findOne({ matricula: req.params.matricula })
+    let aluno = await Aluno.findOne({ matricula: req.params.matricula }).populate('disciplinas')
     let disciplinas = await Disciplina.find();
 
     disciplinas.forEach(disciplina => {
         disciplina.atualizadoEm = disciplina.updatedAt.getTime();
     });
     aluno.atualizadoEm = aluno.updatedAt.getTime();
-
+    let isnew = aluno.isNew
     res.render("register", {
         title: "Alterar aluno",
         aluno: aluno,
-        disciplina: disciplinas,
+        isNew: isnew,
+        alunoDisc: aluno.disciplinas,
+        disciplinas: disciplinas,
         functions: listFunction
     });
 });
@@ -190,7 +193,7 @@ app.post("/register/:matricula?", async function (req, res) {
             for (let index = 0; index < disciplinas.length; index++) {
                 const disciplina = disciplinas[index];
                 for (let indexsub = index + 1; indexsub < auxDisc.length; indexsub++) {
-                    const disc = auxDisc[index];
+                    const disc = auxDisc[indexsub];
                     disciplina.horarios.forEach(horario => {
                         if (disc.horarios.includes(horario)) {
                             res.sendStatus(400);
