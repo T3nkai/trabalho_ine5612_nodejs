@@ -7,7 +7,7 @@
   Matrícula: <input type="text" name="matricula" /><br />
   <% } %>
   Nome: <input type="text" name="nome" value="<%=aluno.nome %>" /><br />
-    <%= alunoDisc %>
+    
   <br />
   <br />
   <%  for(var i=0; i < disciplinas.length; i++) { %>
@@ -21,15 +21,13 @@
           }%>
       <% } %>
   <% if(disciplinaSelecionada) { %>
-    <% if(aluno.updatedAt > disciplina.updatedAt) { %>
+    <% if(!isNew && new Date(aluno.updatedAt).getTime() < new Date(disciplina.updatedAt).getTime() ) { %>
     <input type="checkbox" name="checkDisciplina" value="<%=disciplina.codigo%>" checked >
   <% } 
     }else{ %>
     <input type="checkbox" name="checkDisciplina" value="<%=disciplina.codigo%>" >
   <% } %>
 
-
-  Codigo: <%= disciplina.codigo %><br />
   Nome: <%= disciplina.nome %> <br />
   <table border="1 black solid">
     <tbody>

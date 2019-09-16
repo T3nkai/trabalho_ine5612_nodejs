@@ -151,6 +151,8 @@ app.post("/register/:matricula?", async function (req, res) {
             }else{
                 var checkDisciplina = []
             }
+        }else{
+            var checkDisciplina = req.body.checkDisciplina;
         }
 
         if (!req.body.nome || !req.body.matricula || checkDisciplina.length == 0) {
@@ -193,6 +195,8 @@ app.post("/register/:matricula?", async function (req, res) {
             }else{
                 var checkDisciplina = []
             }
+        }else{
+            var checkDisciplina = req.body.checkDisciplina;
         }
         if (!req.body.nome || checkDisciplina.length == 0) {
             //Se não recebemos um nome, retorna erro 400
